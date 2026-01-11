@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<title>Kontrolli i Komenteve Shqiptare</title>
+<style>
+  body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background-color: #f0f4f8;
+    padding: 40px;
+    color: #333;
+  }
+
+  h2 {
+    text-align: center;
+    color: #1a73e8;
+  }
+
+  textarea {
+    width: 100%;
+    height: 120px;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  button {
+    display: block;
+    margin: 20px auto 0 auto;
+    padding: 12px 25px;
+    font-size: 16px;
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #1669c1;
+  }
+
+  #output {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    min-height: 60px;
+  }
+
+  .fyese {
+    background-color: #ffe0e0;
+    color: #b71c1c;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  .drejtshkrim {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+
+  .gramatik {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Kontrolli i Komenteve Shqiptare</h2>
+<p>Shkruaj komentin këtu dhe shtyp "Kontrollo":</p>
+<textarea id="commentInput" placeholder="Shkruaj komentin këtu..."></textarea>
+<button onclick="checkComment()">Kontrollo</button>
+
+<div id="output"></div>
+
+<script>
+// Lista problematike me RegEx për fleksione
+const problematicWords = [
+  // Fyese
+  {wrong:/\bbudall(a|allëk)?\b/i, type:"fyese", message:"Kujdes! Kjo fjalë është ofenduese dhe nuk duhet përdorur."},
+  {wrong:/\bgomar(\si\smadh)?\b/i, type:"fyese", message:"Kujdes! Kjo fjalë është ofenduese dhe nuk duhet përdorur."},
+  {wrong:/\bidiot\b/i, type:"fyese", message:"Kujdes! Kjo fjalë është ofenduese dhe nuk duhet përdorur."},
+  {wrong:/\bmut\b/i, type:"fyese", message:"Kujdes! Kjo fjalë është ofenduese dhe nuk duhet përdorur."},
+  {wrong:/\bpleh\b/i, type:"fyese", message:"Kujdes! Kjo fjalë është ofenduese dhe nuk duhet përdorur."},
+
+  // Drejtshkrim
+  {wrong:/\bshume\b/i, type:"drejtshkrim", suggestion:"shumë"},
+  {wrong:/\besht\b/i, type:"drejtshkrim", suggestion:"është"},
+  {wrong:/\basgje\b/i, type:"drejtshkrim", suggestion:"asgjë"},
+  {wrong:/\btashi\b/i, type:"drejtshkrim", suggestion:"tani"},
+  {wrong:/\bmir\b/i, type:"drejtshkrim", suggestion:"mirë"},
+  {wrong:/\bune\b/i, type:"drejtshkrim", suggestion:"unë"},
+
+  // Gramatik/Leksik
+  {wrong:/\bajo me pelqen\b/i, type:"gramatik", suggestion:"ajo më pëlqen"},
+  {wrong:/\bti je bukur e\b/i, type:"gramatik", suggestion:"ti je e bukur"},
+  {wrong:/\bajo eshte me e mire\b/i, type:"gramatik", suggestion:"ajo është më e mirë"},
+  {wrong:/\bpo vjen une\b/i, type:"gramatik", suggestion:"po vij unë"},
+  {wrong:/\bduhet ta bej\b/i, type:"gramatik", suggestion:"duhet ta bëj"}
+];
+
+// Funksioni për kontrollin e komentit
+function checkComment() {
+  let input = document.getElementById("commentInput").value.toLowerCase();
+  const outputDiv = document.getElementById("output");
+  outputDiv.innerHTML = "";
+
+  // pastrimi i shenjave të veçanta
+  input = input.replace(/[.,!?;:()"']/g, " ");
+
+  let found = false;
+
+  problematicWords.forEach(item => {
+    const match = input.match(item.wrong);
+    if(match) {
+      found = true;
+      const div = document.createElement("div");
+      div.className = item.type;
+
+      if(item.type === "fyese") {
+        div.textContent = `GABIM (fyese): "${match[0]}" → ${item.message}`;
+      } else {
+        div.textContent = `GABIM (${item.type}): "${match[0]}" → Sugjerim: "${item.suggestion}"`;
+      }
+
+      outputDiv.appendChild(div);
+    }
+  });
+
+  if(!found) {
+    outputDiv.innerHTML = "<div>Asnjë gabim i detektuar.</div>";
+  }
+}
+</script>
+
+</body>
+</html>
